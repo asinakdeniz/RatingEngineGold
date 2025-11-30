@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: Rating Engine Gold
+  datasource:
+    driver-class-name: io.trino.jdbc.TrinoDriver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 3
+      connection-timeout: 10000
+      idle-timeout: 300000
+      max-lifetime: 600000
+  kafka:
+    client-id: rating-engine-gold
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    auto-register-schemas: false
+    schema-registry-url: ${KAFKA_SCHEMA_REGISTRY_URL}
+    security:
+      protocol: 'SASL_SSL'
+    sasl:
+      mechanism: 'SCRAM-SHA-512'
+      jaas-config: >
+        org.apache.kafka.common.security.scram.ScramLoginModule required 
+        username=rating-engine
+        password="${KAFKA_PASSWORD}";
+    consumer:
+      max-poll-records: 2000
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: rating-engine-gold
+      billing-line-topic: customer_services.billing.billing_line.event
+      auto-offset-reset: latest
+      properties:
+        session.timeout.ms: 60000
+        specific.avro.reader: true
+  cache:
+    caffeine:
+      spec: initialCapacity=100,maximumSize=500,expireAfterAccess=120m
+    cache-names: products
+    type: caffeine
+  threads:
+    virtual:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - metrics
+          - prometheus
+          - liquibase
+  health:
+    diskspace.enabled: true
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    enable:
+      all: true
+  info:
+    git:
+      mode: full
