@@ -21,24 +21,15 @@ public class KafkaConsumerConfiguration {
     private final KafkaConfigProperties kafkaConfigProperties;
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> billingLineDataKafkaListener() {
-        ConcurrentKafkaListenerContainerFactory<String, String> factory =
-                new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
+    public ConcurrentKafkaListenerContainerFactory<String, String> billingLineDataKafkaListener(ConsumerFactory<String, Object> consumerFactory) {
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory);
         factory.setAutoStartup(TRUE);
 
         // Enable batch processing
         factory.setBatchListener(true);
         factory.setConcurrency(1);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.BATCH);
-
-        return factory;
-    }
-
-    public <T> ConcurrentKafkaListenerContainerFactory<String, T> concurrentKafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, T> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
-        factory.setAutoStartup(TRUE);
 
         return factory;
     }

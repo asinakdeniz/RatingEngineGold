@@ -29,9 +29,6 @@ spring:
       group-id: rating-engine-gold
       billing-line-topic: customer_services.billing.billing_line.event
       auto-offset-reset: latest
-      properties:
-        session.timeout.ms: 60000
-        specific.avro.reader: true
   cache:
     caffeine:
       spec: initialCapacity=100,maximumSize=500,expireAfterAccess=120m
