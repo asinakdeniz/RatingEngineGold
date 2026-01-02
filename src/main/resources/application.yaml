@@ -23,7 +23,7 @@ spring:
         username=rating-engine
         password="${KAFKA_PASSWORD}";
     consumer:
-      max-poll-records: 2000
+      max-poll-records: 4000
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       group-id: rating-engine-gold
@@ -60,3 +60,7 @@ management:
   info:
     git:
       mode: full
+
+rating-engine:
+  storage:
+    write-engine: spark  # or 'trino'

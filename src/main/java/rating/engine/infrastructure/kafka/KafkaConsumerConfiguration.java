@@ -28,7 +28,7 @@ public class KafkaConsumerConfiguration {
 
         // Enable batch processing
         factory.setBatchListener(true);
-        factory.setConcurrency(1);
+        factory.setConcurrency(6);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.BATCH);
 
         return factory;

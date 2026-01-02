@@ -3,11 +3,13 @@ package rating.engine.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import rating.engine.dto.BillingLineDto;
 import rating.engine.mapper.BillingLineMapper;
 import rating.engine.persistence.BillingLineEntity;
 import rating.engine.persistence.BillingLineRepository;
+import rating.engine.persistence.BillingLineSparkRepository;
 import rating.engine.persistence.ProductEntity;
 
 import java.math.BigDecimal;
@@ -21,8 +23,12 @@ import static java.math.RoundingMode.HALF_UP;
 @RequiredArgsConstructor
 public class BillingLineService {
 
+    @Value("${rating-engine.storage.write-engine}")
+    private String writeEngine;
+
     private final ObjectMapper objectMapper;
     private final BillingLineRepository billingLineRepository;
+    private final BillingLineSparkRepository billingLineSparkRepository;
     private final BillingLineMapper billingLineMapper;
     private final ProductService productService;
 
@@ -53,7 +59,12 @@ public class BillingLineService {
         }
 
         if (!entities.isEmpty()) {
-            billingLineRepository.saveAll(entities);
+            if (writeEngine.equalsIgnoreCase("spark")) {
+                billingLineSparkRepository.saveAll(entities);
+            }
+            if (writeEngine.equalsIgnoreCase("trino")) {
+                billingLineRepository.saveAll(entities);
+            }
             log.info("Saved batch of {} billing lines ({} failed to parse)", entities.size(), parseErrors);
         } else {
             log.warn("No valid billing lines to save from batch of {}", values.size());
